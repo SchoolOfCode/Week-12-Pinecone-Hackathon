@@ -7,15 +7,16 @@
   "files": [
     "dist"
   ],
-  "scripts": {
-    "dev:server": "tsx watch server/index.ts",
-    "dev:app": "vite --config app/vite.config.ts",
-    "dev": "concurrently \"npm run dev:app\" \"npm run dev:server\"",
-    "build:app": "tsc && vite build app",
-    "lint": "eslint app/src/ server/ --ext .ts,.tsx",
-    "tsup": "tsup",
-    "build": "tsup"
-  },
+"scripts": {
+  "dev:server": "tsx watch server/index.ts",
+  "dev:app": "vite --config app/vite.config.ts",
+  "dev": "concurrently \"npm run dev:app\" \"npm run dev:server\"",
+  "build:app": "vite build --config app/vite.config.ts",
+  "build:server": "tsup server/index.ts --format esm",
+  "build": "npm run build:app && npm run build:server",
+  "lint": "eslint app/src/ server/ --ext .ts,.tsx",
+  "tsup": "tsup"
+},
   "keywords": [
     "starter",
     "template",
@@ -73,5 +74,6 @@
     "vite": "^4.4.7",
     "vite-plugin-windicss": "^1.9.0",
     "windicss": "^3.5.6"
-  }
+  },
+  "packageManager": "npm@8.19.2"
 }
