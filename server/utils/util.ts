@@ -10,20 +10,35 @@ const sliceIntoChunks = <T>(arr: T[], chunkSize: number) =>
   );
 
 async function listFiles(dir: string): Promise<string[]> {
-  const files = await fs.readdir(dir);
-  const filePaths: string[] = [];
-  for (const file of files) {
-    const filePath = path.join(dir, file);
-    const stats = await fs.stat(filePath);
-    if (
-      stats.isFile() &&
-      !filePath.includes(".DS_Store") &&
-      !filePath.includes("_deleted")
-    ) {
-      filePaths.push(filePath);
+  try {
+    // Check if directory exists first
+    try {
+      await fs.access(dir);
+    } catch (e) {
+      console.log(`Directory ${dir} does not exist, creating it`);
+      await fs.mkdir(dir, { recursive: true });
+      return []; // Return empty array for new directory
     }
+      
+    const files = await fs.readdir(dir);
+    const filePaths: string[] = [];
+    for (const file of files) {
+      const filePath = path.join(dir, file);
+      const stats = await fs.stat(filePath);
+      if (
+        stats.isFile() &&
+        !filePath.includes('.DS_Store') &&
+        !filePath.includes('_deleted') &&
+        /\.(jpg|jpeg|png|gif|webp)$/i.test(filePath)
+      ) {
+        filePaths.push(filePath);
+      }
+    }
+    return filePaths;
+  } catch (err) {
+    console.error(`Error listing files in ${dir}:`, err);
+    return [];
   }
-  return filePaths;
 }
 
 export const getEnv = (key: string): string => {
