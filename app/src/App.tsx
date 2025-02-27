@@ -1,95 +1,93 @@
-import { useState, useEffect, useCallback } from "react";
-import { toast, Toaster } from "sonner";
-import Dropzone from "react-dropzone";
-import * as AlertDialog from "@radix-ui/react-alert-dialog";
+import {useState, useEffect, useCallback} from "react"
+import {toast, Toaster} from "sonner"
+import Dropzone from "react-dropzone"
+import * as AlertDialog from "@radix-ui/react-alert-dialog"
 // import "./App.css";
 
 interface Image {
-  src: string;
-  alt: string;
+  src: string
+  alt: string
 }
 
 interface SearchResult {
-  src: string;
-  score: number;
+  src: string
+  score: number
 }
 
 function App() {
-  const [images, setImages] = useState<Image[]>([]);
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [images, setImages] = useState<Image[]>([])
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([])
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
-  const [page, setPage] = useState(1);
-  const [indexing, setIndexing] = useState(false);
-  const [indexSuccess, setIndexSuccess] = useState(false);
-  const pageSize = 3;
+  const [page, setPage] = useState(1)
+  const [indexing, setIndexing] = useState(false)
+  const [indexSuccess, setIndexSuccess] = useState(false)
+  const pageSize = 3
 
   const fetchImages = useCallback(async () => {
-    const response = await fetch(
-      `/getImages?page=${page}&pageSize=${pageSize}`
-    );
-    const data: Image[] = await response.json();
-    console.log(data);
-    setImages(data);
-  }, [page, pageSize]);
+    const response = await fetch(`/getImages?page=${page}&pageSize=${pageSize}`)
+    const data: Image[] = await response.json()
+    console.log(data)
+    setImages(data)
+  }, [page, pageSize])
 
   useEffect(() => {
-    void fetchImages();
-  }, [page, pageSize, fetchImages]);
+    void fetchImages()
+  }, [page, pageSize, fetchImages])
 
   const handleImageDrop = async (acceptedFiles: File[]) => {
-    const formData = new FormData();
+    const formData = new FormData()
     acceptedFiles.forEach((file) => {
-      formData.append("images", file);
-    });
+      formData.append("images", file)
+    })
 
     const response = await fetch(`/uploadImages?pageSize=${pageSize}`, {
       method: "POST",
       body: formData,
-    });
+    })
 
     if (response.status === 200) {
-      const { pageOfFirstImage } = await response.json();
-      await fetchImages();
-      setPage(pageOfFirstImage);
-      const imageOrImages = acceptedFiles.length > 1 ? "Images" : "Image";
-      toast.success(`${imageOrImages} uploaded successfully`);
+      const {pageOfFirstImage} = await response.json()
+      await fetchImages()
+      setPage(pageOfFirstImage)
+      const imageOrImages = acceptedFiles.length > 1 ? "Images" : "Image"
+      toast.success(`${imageOrImages} uploaded successfully`)
     }
-  };
+  }
 
   const handleIndexClick = async () => {
-    setIndexing(true);
-    const response = await fetch("/indexImages");
-    setIndexing(false);
+    setIndexing(true)
+    const response = await fetch("/indexImages")
+    setIndexing(false)
     if (response.status === 200) {
-      setIndexSuccess(true);
+      setIndexSuccess(true)
     }
-  };
+  }
 
   const handleDeleteConfirm = async () => {
-    if (!selectedImage) return;
+    if (!selectedImage) return
 
     const response = await fetch(
       `/deleteImage?imagePath=${encodeURIComponent(selectedImage)}`,
-      { method: "DELETE" }
-    );
+      {method: "DELETE"}
+    )
     if (response.status === 200) {
-      setSelectedImage(null);
-      await fetchImages();
-      toast.success("Image deleted successfully");
+      setSelectedImage(null)
+      await fetchImages()
+      toast.success("Image deleted successfully")
     }
-  };
+  }
 
   const handleImageClick = async (imagePath: string) => {
-    setSelectedImage(imagePath);
+    setSelectedImage(imagePath)
     const response = await fetch(
       `/search?imagePath=${encodeURIComponent(imagePath)}`
-    );
-    const matchingImages: SearchResult[] = await response.json();
-    setSearchResults(matchingImages);
-  };
+    )
+    const matchingImages: SearchResult[] = await response.json()
+    setSearchResults(matchingImages)
+  }
 
-  console.log("searchResults: ", searchResults);
+  console.log("searchResults: ", searchResults)
 
   return (
     <div className="min-h-screen bg-gray-800 text-white w-full">
@@ -98,7 +96,7 @@ function App() {
         <h1 className="text-4xl">Image Search</h1>
       </div>
       <Dropzone onDrop={handleImageDrop}>
-        {({ getRootProps, getInputProps }) => (
+        {({getRootProps, getInputProps}) => (
           <section className="mx-5 border-dashed rounded-lg border-2 border-white hover:cursor-pointer">
             <div
               {...getRootProps()}
@@ -212,7 +210,8 @@ function App() {
         ))}
       </div>
     </div>
-  );
+  )
 }
+console.log()
 
-export default App;
+export default App
