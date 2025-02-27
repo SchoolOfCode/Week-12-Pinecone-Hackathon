@@ -28,7 +28,7 @@
   "author": "Roie Schwaber-Cohen",
   "license": "MIT",
   "dependencies": {
-    "@pinecone-database/pinecone": "^2.0.0",
+    "@pinecone-database/pinecone": "^5.0.2",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@xenova/transformers": "^2.2.0",
     "console-table-printer": "^2.11.1",
